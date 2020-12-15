@@ -29,6 +29,8 @@ public class LoginFragment extends Fragment {
     private EditText edtUsername;
     private EditText edtPassword;
     private Button btnLogin;
+    private Button btnFindID;
+    private Button btnFindPassword;
     private CheckBox chkRememberCred;
     private Button btnCreateAccount;
 
@@ -73,6 +75,8 @@ public class LoginFragment extends Fragment {
         edtUsername = rootView.findViewById(R.id.edt_userId);
         edtPassword = rootView.findViewById(R.id.edt_password);
         btnLogin = rootView.findViewById(R.id.btn_login);
+        btnFindID = rootView.findViewById(R.id.btn_find_id);
+        btnFindPassword = rootView.findViewById(R.id.btn_find_password);
         chkRememberCred = rootView.findViewById(R.id.chk_remember);
         btnCreateAccount = rootView.findViewById(R.id.btn_create_account);
 
@@ -96,6 +100,13 @@ public class LoginFragment extends Fragment {
     private void setupViews() {
 
         btnLogin.setOnClickListener(clickListener);
+//        btnFindID.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                ((FindActivity)getActivity()).replaceFragment()
+//            }
+//        });
+        btnFindPassword.setOnClickListener(clickListener);
         btnCreateAccount.setOnClickListener(clickListener);
 
         userPreferences = getActivity().getSharedPreferences("LastProfileUsed", MODE_PRIVATE);
