@@ -26,6 +26,11 @@ public class Profile {
         this.dbId = dbId;
     }
 
+    public Profile(String name, String phoneNum){
+        this.name = name;
+        this.phoneNum = phoneNum;
+    }
+
     /**
      * getters used to access the private fields of the profile
      */

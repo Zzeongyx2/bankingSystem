@@ -3,7 +3,6 @@ package com.example.bankingsystem;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -64,16 +63,6 @@ public class LaunchActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void displayHelpDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        
-        builder.setTitle("Help")
-                .setMessage("This Bank App Demo was made by Mike Banks. Soon, this dialog will give the user help, depending on where they are in the app");
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
     //TODO: NOTE: This code can sometimes run multiple times if login is pressed quickly in succession
     public void login() {
         Intent intent = new Intent(getApplicationContext(), DrawerActivity.class);
@@ -90,5 +79,17 @@ public class LaunchActivity extends AppCompatActivity {
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.login_frm_content, loginFragment).commit();
+    }
+
+    public void findID(){
+        Intent intent = new Intent(getApplicationContext(), FindActivity.class);
+        intent.putExtra("find", "findID");
+        startActivity(intent);
+    }
+
+    public void findPassword(){
+        Intent intent = new Intent(getApplicationContext(), FindActivity.class);
+        intent.putExtra("find", "findPassword");
+        startActivity(intent);
     }
 }
