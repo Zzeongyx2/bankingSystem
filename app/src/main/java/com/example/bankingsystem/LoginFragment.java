@@ -100,13 +100,18 @@ public class LoginFragment extends Fragment {
     private void setupViews() {
 
         btnLogin.setOnClickListener(clickListener);
-//        btnFindID.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                ((FindActivity)getActivity()).replaceFragment()
-//            }
-//        });
-        btnFindPassword.setOnClickListener(clickListener);
+        btnFindID.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((LaunchActivity) getActivity()).findID();
+            }
+        });
+        btnFindPassword.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                ((LaunchActivity)getActivity()).findPassword();
+            }
+        });
         btnCreateAccount.setOnClickListener(clickListener);
 
         userPreferences = getActivity().getSharedPreferences("LastProfileUsed", MODE_PRIVATE);

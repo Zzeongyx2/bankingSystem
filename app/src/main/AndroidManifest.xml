@@ -23,6 +23,7 @@
             android:name=".DrawerActivity"
             android:theme="@style/DrawerOverlapStatusBarTheme"
             android:screenOrientation="portrait" />
+        <activity android:name=".FindActivity"/>
     </application>
 
 </manifest>

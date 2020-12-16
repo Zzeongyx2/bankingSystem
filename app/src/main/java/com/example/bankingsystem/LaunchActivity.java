@@ -80,4 +80,16 @@ public class LaunchActivity extends AppCompatActivity {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.login_frm_content, loginFragment).commit();
     }
+
+    public void findID(){
+        Intent intent = new Intent(getApplicationContext(), FindActivity.class);
+        intent.putExtra("find", "findID");
+        startActivity(intent);
+    }
+
+    public void findPassword(){
+        Intent intent = new Intent(getApplicationContext(), FindActivity.class);
+        intent.putExtra("find", "findPassword");
+        startActivity(intent);
+    }
 }

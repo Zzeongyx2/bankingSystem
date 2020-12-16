@@ -38,7 +38,6 @@ import java.util.Locale;
 public class DrawerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
     public enum manualNavID {
-        DASHBOARD_ID,
         ACCOUNTS_ID
     }
 
@@ -87,7 +86,6 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     public void manualNavigation(manualNavID id, Bundle bundle) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
-        if (id == manualNavID.ACCOUNTS_ID) {
             AccountOverviewFragment accountOverviewFragment = new AccountOverviewFragment();
             if (bundle != null) {
                 accountOverviewFragment.setArguments(bundle);
@@ -95,7 +93,6 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
             ft.replace(R.id.flContent, accountOverviewFragment).commit();
             navView.setCheckedItem(R.id.nav_accounts);
             setTitle("Accounts");
-        }
 
         drawerLayout.closeDrawers();
     }
