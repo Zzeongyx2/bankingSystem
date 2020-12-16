@@ -10,12 +10,22 @@ public class Account {
     private double accountBalance;
     private ArrayList<Transaction> transactions;
     private long dbID;
+    private double loaned;
+
+    public double getLoaned() {
+        return loaned;
+    }
+
+    public void setLoaned(double loaned) {
+        this.loaned = loaned;
+    }
 
     public Account (String accountName, String accountNo, double accountBalance) {
         this.accountName = accountName;
         this.accountNo = accountNo;
         this.accountBalance = accountBalance;
         transactions = new ArrayList<>();
+        loaned = 0;
     }
 
     public Account (String accountName, String accountNo, double accountBalance, long dbID) {

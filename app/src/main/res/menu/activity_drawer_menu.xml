@@ -38,15 +38,15 @@
                     <item
                         android:id="@+id/nav_loan1"
                         android:icon="@drawable/deposit_icon_24"
-                        android:title="Make a Deposit" />
+                        android:title="Get a loan" />
                     <item
                         android:id="@+id/nav_loan2"
                         android:icon="@drawable/icon_transfer_24"
-                        android:title="Make a Transfer" />
+                        android:title="Expand the loan period" />
                     <item
                         android:id="@+id/nav_loan3"
                         android:icon="@drawable/icon_payment_24"
-                        android:title="Make a Payment" />
+                        android:title="Pay interest" />
                 </group>
             </menu>
         </item>

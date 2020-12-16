@@ -11,6 +11,7 @@ public class Profile {
     private ArrayList<Account> accounts;
     private ArrayList<Payee> payees;
     private long dbId;
+    private String credit;
 
     public Profile (String name, String phoneNum, String userId, String password) {
         this.name = name;
@@ -19,6 +20,7 @@ public class Profile {
         this.password = password;
         accounts = new ArrayList<>();
         payees = new ArrayList<>();
+        credit = "4등급";
     }
 
     public Profile (String name, String phoneNum, String userId, String password, long dbId) {
@@ -26,9 +28,14 @@ public class Profile {
         this.dbId = dbId;
     }
 
+
+
     /**
      * getters used to access the private fields of the profile
      */
+    public String getCredit() {
+        return credit;
+    }
     public String getName() {
         return name;
     }
@@ -81,6 +88,11 @@ public class Profile {
         String payeeID = "P" + (payees.size() + 1);
         Payee payee = new Payee(payeeID, payeeName);
         payees.add(payee);
+    }
+
+    public void getLoan(Account account, Double amount) {
+        account.setAccountBalance(account.getAccountBalance() + amount);
+        account.setLoaned(account.getLoaned() + amount);
     }
 
     public void setPayeesFromDB(ArrayList<Payee> payees) {
