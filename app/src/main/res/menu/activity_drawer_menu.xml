@@ -31,7 +31,24 @@
                         android:title="Make a Payment" />
                 </group>
             </menu>
-
+        </item>
+        <item android:title="Loan">
+            <menu>
+                <group android:checkableBehavior="single">
+                    <item
+                        android:id="@+id/nav_loan1"
+                        android:icon="@drawable/deposit_icon_24"
+                        android:title="Make a Deposit" />
+                    <item
+                        android:id="@+id/nav_loan2"
+                        android:icon="@drawable/icon_transfer_24"
+                        android:title="Make a Transfer" />
+                    <item
+                        android:id="@+id/nav_loan3"
+                        android:icon="@drawable/icon_payment_24"
+                        android:title="Make a Payment" />
+                </group>
+            </menu>
         </item>
         <item android:title="Profile">
             <menu>

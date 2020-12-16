@@ -387,9 +387,6 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                     fragmentClass = PaymentFragment.class;
                 }
                 break;
-            case R.id.nav_settings:
-                //TODO: Make Settings fragment
-                break;
             case R.id.nav_logout:
                 Toast.makeText(this, "Logging out", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getApplicationContext(), LaunchActivity.class);
