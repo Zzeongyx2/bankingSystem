@@ -109,7 +109,7 @@ public class InterestFragment extends Fragment {
             else {
                 Account a = (Account) account.getItemAtPosition(index);
                 userProfile.getLoan(a, -loanAmount);
-
+                account.setAdapter(accountAdapter);
                 ApplicationDB applicationDb = new ApplicationDB(getActivity().getApplicationContext());
                 applicationDb.overwriteAccount(userProfile, a);
                 applicationDb.saveNewLoan(userProfile, a.getAccountNo(), new Loan(a.getAccountName(), "20201010",loanAmount));
