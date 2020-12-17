@@ -36,30 +36,23 @@ public class UtilityCheckFragment extends Fragment {
     private TextView txt_gas_input;
     private TextView txt_total_input;
     private Button btnMakePayment;
-
-
-    private int water;
-    private int electricity;
-    private int gas;
-    /*private int waterfee;
-    private int electricityfee;
-    private int gasfee;
-
-    private String water = String.valueOf(waterfee);
-    private String electricity = String.valueOf(electricityfee);
-    private String gas = String.valueOf(electricityfee);*/
+    private Spinner spnSelectAccount;
 
     private ArrayList<Account> accounts;
     private ArrayAdapter<Account> accountAdapter;
 
-    private ArrayList<Payee> payees;
-    private ArrayAdapter<Payee> payeeAdapter;
+    private int water = 30;
+    private int electricity = 20;
+    private int gas = 10;
+
+
 
     View.OnClickListener buttonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             if (view.getId() == btnMakePayment.getId()) {
-                //pay로 화면전환
+                //pay
+                makePayment();
             }
         }
     };
@@ -89,7 +82,7 @@ public class UtilityCheckFragment extends Fragment {
         txt_gas_input = rootView.findViewById(R.id.txt_gas_input);
         txt_total_input = rootView.findViewById(R.id.txt_total_input);
         btnMakePayment = rootView.findViewById(R.id.btn_make_payment);
-
+        spnSelectAccount = rootView.findViewById(R.id.select_acc);
         setValues();
 
         return rootView;
@@ -99,9 +92,6 @@ public class UtilityCheckFragment extends Fragment {
      * method used to setup the values for the views and fields
      */
     private void setValues() {
-        water= 30;
-        electricity = 20;
-        gas = 10;
 
         txt_water_input.setText(String.valueOf(water) + "$");
         txt_electricity_input.setText(String.valueOf(electricity) + "$");
@@ -118,13 +108,59 @@ public class UtilityCheckFragment extends Fragment {
         accountAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, accounts);
         accountAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
+        spnSelectAccount.setAdapter(accountAdapter);
 
-        payees = userProfile.getPayees();
+    }
 
-        payeeAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, payees);
-        payeeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    /**
+     * method that makes a payment
+     */
+    private void makePayment() {
 
+        boolean isNum = false;
+        double paymentAmount = 0;
 
+        try {
+            paymentAmount = Double.parseDouble(String.valueOf(water+electricity+gas));
+            if (Double.parseDouble(String.valueOf(water+electricity+gas)) >= 0.01) {
+                isNum = true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (isNum) {
+
+            int selectedAccountIndex = spnSelectAccount.getSelectedItemPosition();
+
+            if (paymentAmount > userProfile.getAccounts().get(selectedAccountIndex).getAccountBalance()) {
+                Toast.makeText(getActivity(), "You do not have sufficient funds to make this payment", Toast.LENGTH_SHORT).show();
+            } else {
+
+                userProfile.getAccounts().get(selectedAccountIndex).addPaymentTransaction("Utility Bill", paymentAmount);
+
+                accounts = userProfile.getAccounts();
+                spnSelectAccount.setAdapter(accountAdapter);
+                spnSelectAccount.setSelection(selectedAccountIndex);
+
+                ApplicationDB applicationDb = new ApplicationDB(getActivity().getApplicationContext());
+                applicationDb.saveNewTransaction(userProfile, userProfile.getAccounts().get(selectedAccountIndex).getAccountNo(), userProfile.getAccounts().get(selectedAccountIndex).getTransactions().get(userProfile.getAccounts().get(selectedAccountIndex).getTransactions().size()-1));
+                applicationDb.overwriteAccount(userProfile, userProfile.getAccounts().get(selectedAccountIndex));
+
+                SharedPreferences.Editor prefsEditor = userPreferences.edit();
+                gson = new Gson();
+                json = gson.toJson(userProfile);
+                prefsEditor.putString("LastProfileUsed", json).apply();
+
+                Toast.makeText(getActivity(), "Utility Bill Payment of $" + String.format(Locale.getDefault(), "%.2f", paymentAmount) + " successfully made", Toast.LENGTH_SHORT).show();
+                water = 0;
+                electricity = 0;
+                gas = 0;
+                setValues();
+            }
+        } else {
+            Toast.makeText(getActivity(), "There's nothing to Pay!" , Toast.LENGTH_SHORT).show();
+        }
     }
 
 
