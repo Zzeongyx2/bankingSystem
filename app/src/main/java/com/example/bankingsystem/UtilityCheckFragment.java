@@ -30,9 +30,7 @@ import static android.content.Context.MODE_PRIVATE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class UtilityBillCheckFragment extends Fragment {
-
-
+public class UtilityCheckFragment extends Fragment {
     private TextView txt_water_input;
     private TextView txt_electricity_input;
     private TextView txt_gas_input;
@@ -41,21 +39,29 @@ public class UtilityBillCheckFragment extends Fragment {
     private int water;
     private int electricity;
     private int gas;
-    SharedPreferences userPreferences;
-    Gson gson;
-    String json;
-    Profile userProfile;
+
+
+    private ArrayList<Account> accounts;
+    private ArrayAdapter<Account> accountAdapter;
+
+    private ArrayList<Payee> payees;
+    private ArrayAdapter<Payee> payeeAdapter;
 
     View.OnClickListener buttonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             if (view.getId() == btnMakePayment.getId()) {
-                //페이로 넘어가기
+                //pay로 화면전환
             }
         }
     };
 
-    public UtilityBillCheckFragment() {
+    private Gson gson;
+    private String json;
+    private Profile userProfile;
+    private SharedPreferences userPreferences;
+
+    public UtilityCheckFragment() {
         // Required empty public constructor
     }
 
@@ -69,7 +75,6 @@ public class UtilityBillCheckFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_utilitycheck, container, false);
-
 
         txt_water_input = rootView.findViewById(R.id.txt_water_input);
         txt_electricity_input = rootView.findViewById(R.id.txt_elec_input);
@@ -85,22 +90,33 @@ public class UtilityBillCheckFragment extends Fragment {
      * method used to setup the values for the views and fields
      */
     private void setValues() {
-        water = 50;
-        electricity = 30;
-        gas = 20;
-        userPreferences = getActivity().getSharedPreferences("LastProfileUsed", MODE_PRIVATE);
-
-        gson = new Gson();
-        json = userPreferences.getString("LastProfileUsed", "");
-        userProfile = gson.fromJson(json, Profile.class);
-
+        water = 30;
+        electricity = 20;
+        gas = 10;
 
         txt_water_input.setText(water);
         txt_electricity_input.setText(electricity);
         txt_gas_input.setText(gas);
 
+        userPreferences = getActivity().getSharedPreferences("LastProfileUsed", MODE_PRIVATE);
+        gson = new Gson();
+        json = userPreferences.getString("LastProfileUsed", "");
+        userProfile = gson.fromJson(json, Profile.class);
+
         btnMakePayment.setOnClickListener(buttonClickListener);
 
+        accounts = userProfile.getAccounts();
+        accountAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, accounts);
+        accountAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+
+        payees = userProfile.getPayees();
+
+        payeeAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, payees);
+        payeeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+
     }
+
 
 }

@@ -372,7 +372,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                     displayAccountAlertADialog("UtilityCheck");
                 } else {
                     title = "UtilityCheck";
-                    fragmentClass = PaymentFragment.class;
+                    fragmentClass = UtilityCheckFragment.class;
                 }
                 break;
             case R.id.nav_logout:
