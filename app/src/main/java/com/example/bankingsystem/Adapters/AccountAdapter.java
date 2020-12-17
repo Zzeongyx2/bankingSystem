@@ -30,13 +30,6 @@ public class AccountAdapter extends ArrayAdapter<Account> {
         this.resource = resource;
     }
 
-    /**
-     * function that gets the view from the adapter
-     * @param position
-     * @param convertView
-     * @param parent
-     * @return
-     */
     @Override
     @NonNull
     public View getView (int position, View convertView, @NonNull ViewGroup parent) {
