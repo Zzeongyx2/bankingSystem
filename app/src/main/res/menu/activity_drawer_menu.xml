@@ -6,10 +6,6 @@
     tools:showIn="navigation_view">
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_dashboard"
-            android:icon="@drawable/dashboard_icon_24"
-            android:title="Dashboard" />
-        <item
             android:id="@+id/nav_accounts"
             android:icon="@drawable/icon_accounts_24"
             android:title="Accounts" />

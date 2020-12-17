@@ -113,7 +113,7 @@ public class GetLoanFragment extends Fragment {
 
                 ApplicationDB applicationDb = new ApplicationDB(getActivity().getApplicationContext());
                 applicationDb.overwriteAccount(userProfile, a);
-                applicationDb.saveNewLoan(userProfile, a.getAccountNo(), new Loan(a.getAccountName(), loanAmount));
+                applicationDb.saveNewLoan(userProfile, a.getAccountNo(), new Loan(a.getAccountName(),loanAmount));
 
                 SharedPreferences.Editor prefsEditor = userPreferences.edit();
                 json = gson.toJson(userProfile);

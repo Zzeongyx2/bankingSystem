@@ -13,15 +13,19 @@ public class Loan {
     public Loan() {
 
     }
+    public Loan(String accountName,  double amount) {
+        this.accountName = accountName;
+        this.amount = amount;
+    }
 
-    public Loan(String accountName, double amount) {
+    public Loan(String accountName, String timestamp, double amount) {
+        this.loan_timestamp = timestamp;
         this.accountName = accountName;
         this.amount = amount;
     }
 
     public Loan(String accountName, String timestamp, double amount, long dbID) {
-        this(accountName, amount);
-        this.loan_timestamp = timestamp;
+        this(accountName, timestamp, amount);
         this.dbID = dbID;
     }
 
