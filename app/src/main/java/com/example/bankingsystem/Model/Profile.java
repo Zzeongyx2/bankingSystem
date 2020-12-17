@@ -33,6 +33,7 @@ public class Profile {
         this.phoneNum = phoneNum;
     }
 
+
     /**
      * getters used to access the private fields of the profile
      */

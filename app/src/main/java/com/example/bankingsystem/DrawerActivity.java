@@ -86,11 +86,6 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     public void manualNavigation(manualNavID id, Bundle bundle) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
-        if (id == manualNavID.DASHBOARD_ID) {
-            ft.replace(R.id.flContent, new DashboardFragment()).commit();
-            navView.setCheckedItem(R.id.nav_dashboard);
-            setTitle("Dashboard");
-        } else if (id == manualNavID.ACCOUNTS_ID) {
             AccountOverviewFragment accountOverviewFragment = new AccountOverviewFragment();
             if (bundle != null) {
                 accountOverviewFragment.setArguments(bundle);
@@ -98,7 +93,6 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
             ft.replace(R.id.flContent, accountOverviewFragment).commit();
             navView.setCheckedItem(R.id.nav_accounts);
             setTitle("Accounts");
-        }
 
         drawerLayout.closeDrawers();
     }
@@ -138,7 +132,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
         //onNavigationItemSelected(navView.getMenu().getItem().); TODO: Try calling the event listener manually for navigation, get rid of the manualNav method
 
-        manualNavigation(manualNavID.DASHBOARD_ID, null);
+        manualNavigation(manualNavID.ACCOUNTS_ID, null);
     }
 
     //TODO: Find different way to close keyboard when opening drawer or clean this up
@@ -321,16 +315,6 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         return true;
     }
 
-    public void displayHelpDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        builder.setTitle("Help")
-                .setMessage("This Bank App Demo was made by Mike Banks. Soon, this dialog will give the user help, depending on where they are in the app");
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -357,9 +341,6 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         String title = item.getTitle().toString();
 
         switch(item.getItemId()) {
-            case R.id.nav_dashboard:
-                fragmentClass = DashboardFragment.class;
-                break;
             case R.id.nav_accounts:
                 fragmentClass = AccountOverviewFragment.class;
                 break;
@@ -386,8 +367,29 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                     fragmentClass = PaymentFragment.class;
                 }
                 break;
-            case R.id.nav_settings:
-                //TODO: Make Settings fragment
+            case R.id.nav_loan1:
+                if (userProfile.getAccounts().size() < 1) {
+                    displayAccountAlertADialog("Payment");
+                } else {
+                    title = "Get a Loan";
+                    fragmentClass = GetLoanFragment.class;
+                }
+                break;
+            case R.id.nav_loan2:
+                if (userProfile.getAccounts().size() < 1) {
+                    displayAccountAlertADialog("Payment");
+                } else {
+                    title = "Expand the loan period";
+                    fragmentClass = PeriodFragment.class;
+                }
+                break;
+            case R.id.nav_loan3:
+                if (userProfile.getAccounts().size() < 1) {
+                    displayAccountAlertADialog("Payment");
+                } else {
+                    title = "Pay interest";
+                    fragmentClass = InterestFragment.class;
+                }
                 break;
             case R.id.nav_logout:
                 Toast.makeText(this, "Logging out", Toast.LENGTH_SHORT).show();
@@ -396,7 +398,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                 finish();
                 break;
             default:
-                fragmentClass = DashboardFragment.class;
+                fragmentClass = AccountOverviewFragment.class;
         }
 
         try {
