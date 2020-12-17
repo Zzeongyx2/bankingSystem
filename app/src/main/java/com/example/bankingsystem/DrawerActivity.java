@@ -367,12 +367,21 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                     fragmentClass = PaymentFragment.class;
                 }
                 break;
+            case R.id.nav_utility_check:
+                if (userProfile.getAccounts().size() < 1) {
+                    displayAccountAlertADialog("UtilityCheck");
+                } else {
+                    title = "UtilityCheck";
+                    fragmentClass = UtilityCheckFragment.class;
+                }
+                break;
             case R.id.nav_logout:
                 Toast.makeText(this, "Logging out", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getApplicationContext(), LaunchActivity.class);
                 startActivity(intent);
                 finish();
                 break;
+
             default:
                 fragmentClass = AccountOverviewFragment.class;
         }
