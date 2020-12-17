@@ -96,6 +96,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="Find ID"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_create_account" />
 
@@ -108,6 +109,7 @@
         android:layout_marginTop="8dp"
         android:text="Find password"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_create_account" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_find_id" />
 
 </android.support.constraint.ConstraintLayout>
