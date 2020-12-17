@@ -25,6 +25,10 @@
                         android:id="@+id/nav_payment"
                         android:icon="@drawable/icon_payment_24"
                         android:title="Make a Payment" />
+                    <item
+                        android:id="@+id/nav_utility_payment"
+                        android:icon="@drawable/icon_payment_24"
+                        android:title="Check utility bill" />
                 </group>
             </menu>
 
