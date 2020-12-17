@@ -86,6 +86,7 @@
     <string name="select_account">Select account</string>
     <string name="pay_interest">pay interest</string>
     <string name="expand_period">Expand period</string>
+    <string name="loan_amount">빌린돈이 없습니다.</string>
 
     <string-array name="days">
         <item>Sunday</item>

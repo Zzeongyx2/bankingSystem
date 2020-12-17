@@ -20,7 +20,7 @@ public class ApplicationDB {
     private SQLiteDatabase database;
     private SQLiteOpenHelper openHelper;
 
-    private static final String DB_NAME = "userAccounts.db";
+    private static final String DB_NAME = "userAccounts1.db";
     private static final int DB_VERSION = 2;
 
     //------------------------------------------------------------------- PROFILE TABLE ----------------------- \\
@@ -138,7 +138,7 @@ public class ApplicationDB {
                     PROFILE_ID + " INTEGER NOT NULL, " +
                     ACCOUNT_NO + " TEXT NOT NULL, " +
                     LOAN_ACCOUNT + " TEXT NOT NULL, " +
-                    TIMESTAMP + " TEXT, " +
+                    LOAN_TIMESTAMP + " TEXT, " +
                     LOAN_AMOUNT + " REAL, " +
                     "PRIMARY KEY(" + PROFILE_ID + "," + ACCOUNT_NO + "," + LOAN_ACCOUNT + "), " +
                     "FOREIGN KEY(" + PROFILE_ID + "," + ACCOUNT_NO + ") REFERENCES " +
@@ -239,7 +239,7 @@ public class ApplicationDB {
         cv.put(PROFILE_ID, profile.getDbId());
         cv.put(ACCOUNT_NO, accountNo);
         cv.put(LOAN_ACCOUNT, loan.getAccountName());
-        cv.put(TIMESTAMP, loan.getLoan_timestamp());
+        cv.put(LOAN_TIMESTAMP, loan.getLoan_timestamp());
 
         cv.put(LOAN_AMOUNT, loan.getAmount());
 
@@ -353,8 +353,8 @@ public class ApplicationDB {
                 long id = cursor.getLong(PROFILE_ID_COLUMN);
                 if (accountNo.equals(cursor.getString(ACCOUNT_NO_COLUMN))) {
                     String account = cursor.getString(LOAN_ACCOUNT_COLUMN);
-                    String timestamp = cursor.getString(TIMESTAMP_COLUMN);
-                    double amount = cursor.getDouble(LOAN_ACCOUNT_COLUMN);
+                    String timestamp = cursor.getString(LOAN_TIMESTAMP_COLUMN);
+                    double amount = cursor.getDouble(LOAN_AMOUNT_COLUMN);
 
                     loan = new Loan(account, timestamp, amount, id);
                 }
