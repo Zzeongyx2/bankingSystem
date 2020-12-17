@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,12 +24,12 @@ import java.util.Locale;
 
 import static android.content.Context.MODE_PRIVATE;
 
-public class PeriodFragment extends Fragment {
+public class InterestFragment extends Fragment {
     private Spinner account;
     private TextView txtAccTitle;
     private TextView txtCredit;
-    private DatePicker dtDate;
-    private Button btnExpandPeriod;
+    private EditText edtInterestAmount;
+    private Button btnGetLoan;
 
     ArrayList<Account> accounts;
     ArrayAdapter<Account> accountAdapter;
@@ -40,7 +40,7 @@ public class PeriodFragment extends Fragment {
 
     Profile userProfile;
 
-    public PeriodFragment() {
+    public InterestFragment() {
     }
 
     @Override
@@ -52,12 +52,12 @@ public class PeriodFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_period, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_interest, container, false);
         txtAccTitle = rootView.findViewById(R.id.txt_acc_title);
         account = rootView.findViewById(R.id.spn_select_acc);
         txtCredit = rootView.findViewById(R.id.txt_credit);
-        dtDate = rootView.findViewById(R.id.dp_date);
-        btnExpandPeriod = rootView.findViewById(R.id.btn_expand_period);
+        edtInterestAmount = rootView.findViewById(R.id.edt_interest_amount);
+        btnGetLoan = rootView.findViewById(R.id.btn_pay_interest);
 
         setValues();
 
@@ -80,20 +80,48 @@ public class PeriodFragment extends Fragment {
         json = userPreferences.getString("LastProfileUsed", "");
         userProfile = gson.fromJson(json, Profile.class);
         txtCredit.setText(userProfile.getCredit());
-        btnExpandPeriod.setOnClickListener(new View.OnClickListener() {
+        btnGetLoan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                confirmGetLoan();
+                confirmPayInterest();
             }
         });
 
         setAdapters();
     }
 
-    private void confirmGetLoan() {
-        int day = dtDate.getDayOfMonth();
-        int month = dtDate.getMonth();
-        int year = dtDate.getYear();
-        Toast.makeText(getActivity(), year + "년" + (month + 1) + "월" + day + "일까지 대출 기한이 연장되었습니다." , Toast.LENGTH_SHORT).show();
+    private void confirmPayInterest() {
+        int index = account.getSelectedItemPosition();
+        boolean isNum = false;
+        double loanAmount = 0;
+
+        try {
+            loanAmount = Double.parseDouble(edtInterestAmount.getText().toString());
+            isNum = true;
+        } catch (Exception e) {
+            Toast.makeText(getActivity(), "Please enter an amount to get a loan", Toast.LENGTH_SHORT).show();
+        }
+
+        if (isNum) {
+            if (loanAmount > userProfile.getAccounts().get(index).getAccountBalance()) {
+                Toast.makeText(getActivity(), "You cannot pay a interest much than your balance", Toast.LENGTH_LONG).show();
+            }
+            else {
+                Account a = (Account) account.getItemAtPosition(index);
+                userProfile.getLoan(a, -loanAmount);
+
+                ApplicationDB applicationDb = new ApplicationDB(getActivity().getApplicationContext());
+                applicationDb.overwriteAccount(userProfile, a);
+                applicationDb.saveNewLoan(userProfile, a.getAccountNo(), new Loan(a.getAccountName(), loanAmount));
+
+                SharedPreferences.Editor prefsEditor = userPreferences.edit();
+                json = gson.toJson(userProfile);
+                prefsEditor.putString("LastProfileUsed", json).apply();
+
+                edtInterestAmount.getText().clear();
+
+                Toast.makeText(getActivity(), "Pay interest of $" + String.format(Locale.getDefault(), "%.2f",loanAmount) , Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

@@ -408,7 +408,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                     displayAccountAlertADialog("Payment");
                 } else {
                     title = "Pay interest";
-                    fragmentClass = GetLoanFragment.class;
+                    fragmentClass = InterestFragment.class;
                 }
                 break;
             case R.id.nav_logout:

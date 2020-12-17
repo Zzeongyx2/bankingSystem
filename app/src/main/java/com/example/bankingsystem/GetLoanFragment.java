@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.bankingsystem.Model.Account;
+import com.example.bankingsystem.Model.Loan;
 import com.example.bankingsystem.Model.Profile;
 import com.example.bankingsystem.Model.db.ApplicationDB;
 import com.google.gson.Gson;
@@ -104,7 +105,7 @@ public class GetLoanFragment extends Fragment {
 
         if (isNum) {
             if (loanAmount > 1000) {
-                Toast.makeText(getActivity(), "You cannot get a loan much than $1000", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "You cannot get a loan much than $1000", Toast.LENGTH_LONG).show();
             }
             else {
                 Account a = (Account) account.getItemAtPosition(index);
@@ -112,10 +113,13 @@ public class GetLoanFragment extends Fragment {
 
                 ApplicationDB applicationDb = new ApplicationDB(getActivity().getApplicationContext());
                 applicationDb.overwriteAccount(userProfile, a);
+                applicationDb.saveNewLoan(userProfile, a.getAccountNo(), new Loan(a.getAccountName(), loanAmount));
 
                 SharedPreferences.Editor prefsEditor = userPreferences.edit();
                 json = gson.toJson(userProfile);
                 prefsEditor.putString("LastProfileUsed", json).apply();
+
+                edtLoanAmount.getText().clear();
 
                 Toast.makeText(getActivity(), "Get Loan of $" + String.format(Locale.getDefault(), "%.2f",loanAmount) , Toast.LENGTH_SHORT).show();
             }

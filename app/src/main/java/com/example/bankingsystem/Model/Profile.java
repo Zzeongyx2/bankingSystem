@@ -92,7 +92,6 @@ public class Profile {
 
     public void getLoan(Account account, Double amount) {
         account.setAccountBalance(account.getAccountBalance() + amount);
-        account.setLoaned(account.getLoaned() + amount);
     }
 
     public void setPayeesFromDB(ArrayList<Payee> payees) {
