@@ -34,12 +34,20 @@ public class UtilityCheckFragment extends Fragment {
     private TextView txt_water_input;
     private TextView txt_electricity_input;
     private TextView txt_gas_input;
+    private TextView txt_total_input;
     private Button btnMakePayment;
+
 
     private int water;
     private int electricity;
     private int gas;
+    /*private int waterfee;
+    private int electricityfee;
+    private int gasfee;
 
+    private String water = String.valueOf(waterfee);
+    private String electricity = String.valueOf(electricityfee);
+    private String gas = String.valueOf(electricityfee);*/
 
     private ArrayList<Account> accounts;
     private ArrayAdapter<Account> accountAdapter;
@@ -79,6 +87,7 @@ public class UtilityCheckFragment extends Fragment {
         txt_water_input = rootView.findViewById(R.id.txt_water_input);
         txt_electricity_input = rootView.findViewById(R.id.txt_elec_input);
         txt_gas_input = rootView.findViewById(R.id.txt_gas_input);
+        txt_total_input = rootView.findViewById(R.id.txt_total_input);
         btnMakePayment = rootView.findViewById(R.id.btn_make_payment);
 
         setValues();
@@ -90,14 +99,14 @@ public class UtilityCheckFragment extends Fragment {
      * method used to setup the values for the views and fields
      */
     private void setValues() {
-        water = 30;
+        water= 30;
         electricity = 20;
         gas = 10;
 
-        txt_water_input.setText(water);
-        txt_electricity_input.setText(electricity);
-        txt_gas_input.setText(gas);
-
+        txt_water_input.setText(String.valueOf(water) + "$");
+        txt_electricity_input.setText(String.valueOf(electricity) + "$");
+        txt_gas_input.setText(String.valueOf(gas) + "$");
+        txt_total_input.setText(String.valueOf(water + electricity + gas) + "$");
         userPreferences = getActivity().getSharedPreferences("LastProfileUsed", MODE_PRIVATE);
         gson = new Gson();
         json = userPreferences.getString("LastProfileUsed", "");
