@@ -110,12 +110,65 @@ public class TransferFragment extends Fragment {
     }
 
     private void confirmAutoTransfer(){//10초마다 confirmTransfer() 실시
-
-
+        final ApplicationDB applicationDb = new ApplicationDB(getActivity().getApplicationContext());
+        double transferAmount = Double.parseDouble(edtTransferAmount.getText().toString());
+        Toast.makeText(getActivity(), "Auto Transfer of $" + String.format(Locale.getDefault(), "%.2f",transferAmount) + " successfully made", Toast.LENGTH_SHORT).show();
         CDT = new CountDownTimer(10 * 10000, 10000) {
             public void onTick(long millisUntilFinished) {
                 //반복실행할 구문
-                confirmTransfer();
+                int receivingAccIndex = spnReceivingAccount.getSelectedItemPosition();
+                boolean isNum = false;
+                double transferAmount = 0;
+
+                try {
+                    transferAmount = Double.parseDouble(edtTransferAmount.getText().toString());
+                    isNum = true;
+                } catch (Exception e) {
+                    Toast.makeText(getActivity(), "Please enter an amount to transfer", Toast.LENGTH_SHORT).show();
+                }
+                if (isNum) {
+                    if (spnSendingAccount.getSelectedItemPosition() == receivingAccIndex) {
+                        Toast.makeText(getActivity(), "You cannot make a transfer to the same account", Toast.LENGTH_SHORT).show();
+                    }
+                    else if(transferAmount < 0.01) {
+                        Toast.makeText(getActivity(), "The minimum amount for a transfer is $0.01", Toast.LENGTH_SHORT).show();
+
+                    } else if (transferAmount > userProfile.getAccounts().get(spnSendingAccount.getSelectedItemPosition()).getAccountBalance()) {
+
+                        Account acc = (Account) spnSendingAccount.getSelectedItem();
+                        Toast.makeText(getActivity(), "The account," + " " + acc.toString() + " " + "does not have sufficient funds to make this transfer", Toast.LENGTH_LONG).show();
+                    } else {
+
+                        int sendingAccIndex = spnSendingAccount.getSelectedItemPosition();
+
+                        Account sendingAccount = (Account) spnSendingAccount.getItemAtPosition(sendingAccIndex);
+                        Account receivingAccount = (Account) spnReceivingAccount.getItemAtPosition(receivingAccIndex);
+
+                        userProfile.addTransferTransaction(sendingAccount, receivingAccount, transferAmount);
+
+                        spnSendingAccount.setAdapter(accountAdapter);
+                        spnReceivingAccount.setAdapter(accountAdapter);
+
+                        spnSendingAccount.setSelection(sendingAccIndex);
+                        spnReceivingAccount.setSelection(receivingAccIndex);
+
+
+
+                        applicationDb.overwriteAccount(userProfile, sendingAccount);
+                        applicationDb.overwriteAccount(userProfile, receivingAccount);
+
+                        applicationDb.saveNewTransaction(userProfile, sendingAccount.getAccountNo(),
+                                sendingAccount.getTransactions().get(sendingAccount.getTransactions().size()-1));
+                        applicationDb.saveNewTransaction(userProfile, receivingAccount.getAccountNo(),
+                                receivingAccount.getTransactions().get(receivingAccount.getTransactions().size()-1));
+
+
+                        SharedPreferences.Editor prefsEditor = userPreferences.edit();
+                        json = gson.toJson(userProfile);
+                        prefsEditor.putString("LastProfileUsed", json).apply();
+
+                    }
+                }
             }
             public void onFinish() {
                 //마지막에 실행할 구문
