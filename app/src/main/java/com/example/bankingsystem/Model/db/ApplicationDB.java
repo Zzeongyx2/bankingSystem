@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.bankingsystem.Model.Account;
+import com.example.bankingsystem.Model.Loan;
 import com.example.bankingsystem.Model.Payee;
 import com.example.bankingsystem.Model.Profile;
 import com.example.bankingsystem.Model.Transaction;
@@ -19,7 +20,7 @@ public class ApplicationDB {
     private SQLiteDatabase database;
     private SQLiteOpenHelper openHelper;
 
-    private static final String DB_NAME = "userAccounts.db";
+    private static final String DB_NAME = "userAccounts1.db";
     private static final int DB_VERSION = 2;
 
     //------------------------------------------------------------------- PROFILE TABLE ----------------------- \\
@@ -80,6 +81,17 @@ public class ApplicationDB {
     private static final int TRANSACTION_TYPE_COLUMN = 8;
     //------------------------------------------------------------------- TRANSACTION TABLE ----------------------- \\
 
+    //------------------------------------------------------------------- LOAN TABLE ----------------------- \\
+    private static final String LOANS_TABLE = "Loans";
+
+    private static final String LOAN_ACCOUNT = "account";
+    private static final String LOAN_TIMESTAMP = "loan_timestamp";
+    private static final String LOAN_AMOUNT = "amount";
+
+    private static final int LOAN_ACCOUNT_COLUMN = 2;
+    private static final int LOAN_TIMESTAMP_COLUMN = 3;
+    private static final int LOAN_AMOUNT_COLUMN = 4;
+    //------------------------------------------------------------------- LOAN TABLE ----------------------- \\
     private static final String CREATE_PROFILES_TABLE =
             "CREATE TABLE " + PROFILES_TABLE + " (" +
                     PROFILE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -117,6 +129,18 @@ public class ApplicationDB {
                     TRANSACTION_AMOUNT + " REAL, " +
                     TRANS_TYPE + " TEXT, " +
                     "PRIMARY KEY(" + PROFILE_ID + "," + ACCOUNT_NO + "," + TRANSACTION_ID + "), " +
+                    "FOREIGN KEY(" + PROFILE_ID + "," + ACCOUNT_NO + ") REFERENCES " +
+                    ACCOUNTS_TABLE + "(" + PROFILE_ID + "," + ACCOUNT_NO + ")," +
+                    "FOREIGN KEY(" + PROFILE_ID + ") REFERENCES " + PROFILES_TABLE + "(" + PROFILE_ID + "))";
+
+    private static final String CREATE_LOANS_TABLE =
+            "CREATE TABLE " + LOANS_TABLE + " (" +
+                    PROFILE_ID + " INTEGER NOT NULL, " +
+                    ACCOUNT_NO + " TEXT NOT NULL, " +
+                    LOAN_ACCOUNT + " TEXT NOT NULL, " +
+                    LOAN_TIMESTAMP + " TEXT, " +
+                    LOAN_AMOUNT + " REAL, " +
+                    "PRIMARY KEY(" + PROFILE_ID + "," + ACCOUNT_NO + "," + LOAN_ACCOUNT + "), " +
                     "FOREIGN KEY(" + PROFILE_ID + "," + ACCOUNT_NO + ") REFERENCES " +
                     ACCOUNTS_TABLE + "(" + PROFILE_ID + "," + ACCOUNT_NO + ")," +
                     "FOREIGN KEY(" + PROFILE_ID + ") REFERENCES " + PROFILES_TABLE + "(" + PROFILE_ID + "))";
@@ -208,6 +232,25 @@ public class ApplicationDB {
         database.close();
     }
 
+    public void saveNewLoan(Profile profile, String accountNo, Loan loan) {
+        database = openHelper.getWritableDatabase();
+
+        ContentValues cv = new ContentValues();
+        cv.put(PROFILE_ID, profile.getDbId());
+        cv.put(ACCOUNT_NO, accountNo);
+        cv.put(LOAN_ACCOUNT, loan.getAccountName());
+        cv.put(LOAN_TIMESTAMP, loan.getLoan_timestamp());
+
+        cv.put(LOAN_AMOUNT, loan.getAmount());
+
+        long id = database.insert(LOANS_TABLE, null, cv);
+
+        loan.setDbId(id);
+
+        database.close();
+    }
+
+
     //TODO: Remove an account?
     public void overwriteAccount(Profile profile, Account account) {
 
@@ -297,6 +340,34 @@ public class ApplicationDB {
         }
     }
 
+    public Loan getLoansFromCurrentAccount(long profileID, String accountNo) {
+
+        database = openHelper.getReadableDatabase();
+
+        Cursor cursor = database.query(LOANS_TABLE, null, null, null, null,
+                null ,null);
+        Loan loan = new Loan();
+
+        while (cursor.moveToNext()) {
+            if (profileID == cursor.getLong(PROFILE_ID_COLUMN)) {
+                long id = cursor.getLong(PROFILE_ID_COLUMN);
+                if (accountNo.equals(cursor.getString(ACCOUNT_NO_COLUMN))) {
+                    String account = cursor.getString(LOAN_ACCOUNT_COLUMN);
+                    String timestamp = cursor.getString(LOAN_TIMESTAMP_COLUMN);
+                    double amount = cursor.getDouble(LOAN_AMOUNT_COLUMN);
+
+                    loan = new Loan(account, timestamp, amount, id);
+                }
+
+            }
+        }
+
+        cursor.close();
+        database.close();
+
+        return loan;
+    }
+
     public ArrayList<Transaction> getTransactionsFromCurrentAccount(long profileID, String accountNo) {
 
         ArrayList<Transaction> transactions = new ArrayList<>();
@@ -312,6 +383,7 @@ public class ApplicationDB {
 
         return transactions;
     }
+
     private void getTransactionsFromCursor(long profileID, String accountNo, ArrayList<Transaction> transactions, Cursor cursor) {
 
         while (cursor.moveToNext()) {
@@ -381,6 +453,7 @@ public class ApplicationDB {
             db.execSQL(CREATE_PAYEES_TABLE);
             db.execSQL(CREATE_ACCOUNTS_TABLE);
             db.execSQL(CREATE_TRANSACTIONS_TABLE);
+            db.execSQL(CREATE_LOANS_TABLE);
         }
 
         @Override
@@ -390,6 +463,7 @@ public class ApplicationDB {
             db.execSQL("DROP TABLE IF EXISTS " + PAYEES_TABLE);
             db.execSQL("DROP TABLE IF EXISTS " + ACCOUNTS_TABLE);
             db.execSQL("DROP TABLE IF EXISTS " + TRANSACTIONS_TABLE);
+            db.execSQL("DROP TABLE IF EXISTS " + LOANS_TABLE);
             onCreate(db);
         }
     }
