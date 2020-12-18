@@ -49,7 +49,6 @@
     <string name="select_payee_msg">Select a Payee</string>
     <string name="add_payee_btn_txt">Add a Payee</string>
     <string name="amount_for_payee">Amount</string>
-    <string name="amount_for_loan">Amount</string>
     <string name="add_payee_name">Payee Name</string>
     <string name="confirm_payee_addition">Confirm Payee Addition</string>
     <string name="make_payment_btn_msg">Make Payment</string>
@@ -81,12 +80,6 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="credit">Credit</string>
-    <string name="get_a_loan">Get a loan</string>
-    <string name="select_account">Select account</string>
-    <string name="pay_interest">pay interest</string>
-    <string name="expand_period">Expand period</string>
-    <string name="loan_amount">빌린돈이 없습니다.</string>
 
     <string-array name="days">
         <item>Sunday</item>

@@ -220,6 +220,7 @@ public class PaymentFragment extends Fragment {
                 applicationDb.saveNewTransaction(userProfile, userProfile.getAccounts().get(selectedAccountIndex).getAccountNo(), userProfile.getAccounts().get(selectedAccountIndex).getTransactions().get(userProfile.getAccounts().get(selectedAccountIndex).getTransactions().size()-1));
                 applicationDb.overwriteAccount(userProfile, userProfile.getAccounts().get(selectedAccountIndex));
 
+
                 SharedPreferences.Editor prefsEditor = userPreferences.edit();
                 gson = new Gson();
                 json = gson.toJson(userProfile);

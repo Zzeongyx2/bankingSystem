@@ -9,7 +9,6 @@ public class Account {
     private String accountNo;
     private double accountBalance;
     private ArrayList<Transaction> transactions;
-    private Loan loan;
     private long dbID;
 
     public Account (String accountName, String accountNo, double accountBalance) {
@@ -43,14 +42,6 @@ public class Account {
 
     public ArrayList<Transaction> getTransactions() {
         return transactions;
-    }
-
-    public Loan getLoan() {
-        return loan;
-    }
-
-    public void setLoan(Loan loan) {
-        this.loan = loan;
     }
 
     public void addPaymentTransaction (String payee, double amount) {
@@ -93,5 +84,4 @@ public class Account {
     public void setTransactions(ArrayList<Transaction> transactions) {
         this.transactions = transactions;
     }
-
 }

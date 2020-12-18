@@ -105,7 +105,7 @@ public class AccountOverviewFragment extends Fragment {
         return rootView;
     }
 
-    private void displayAccountDialog() {
+    public void displayAccountDialog() {
 
         accountDialog = new Dialog(getActivity());
         accountDialog.setContentView(R.layout.account_dialog);

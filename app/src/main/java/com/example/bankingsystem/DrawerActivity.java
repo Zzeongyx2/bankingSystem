@@ -29,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.bankingsystem.Model.Account;
+import com.example.bankingsystem.Model.OpenBankAccount;
 import com.example.bankingsystem.Model.Profile;
 import com.example.bankingsystem.Model.db.ApplicationDB;
 import com.google.gson.Gson;
@@ -50,11 +51,13 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
     private Gson gson;
     private String json;
 
+
     private Profile userProfile;
 
     private Dialog depositDialog;
     private Spinner spnAccounts;
     private ArrayAdapter<Account> accountAdapter;
+    private ArrayAdapter<OpenBankAccount> bankAccountAdapter;
     private EditText edtDepositAmount;
     private Button btnCancel;
     private Button btnDeposit;
@@ -87,6 +90,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
             AccountOverviewFragment accountOverviewFragment = new AccountOverviewFragment();
+
             if (bundle != null) {
                 accountOverviewFragment.setArguments(bundle);
             }
@@ -183,7 +187,19 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         for (int iAccount = 0; iAccount < userProfile.getAccounts().size(); iAccount++) {
             userProfile.getAccounts().get(iAccount).setTransactions(applicationDb.getTransactionsFromCurrentAccount(userProfile.getDbId(), userProfile.getAccounts().get(iAccount).getAccountNo()));
         }
+
     }
+
+//    private void loadFromBankDB() {
+//        ApplicationDB applicationDb = new ApplicationDB(getApplicationContext());
+//
+//        userProfile2.setPayeesFromDB(applicationDb.getPayeesFromCurrentProfile(userProfile.getDbId()));
+//        userProfile2.setBankAccountsFromDB(applicationDb.getBankAccountsFromCurrentProfile(userProfile.getDbId()));
+//
+//        for (int iAccount = 0; iAccount < userProfile2.getBankAccounts().size(); iAccount++) {
+//            userProfile2.getBankAccounts().get(iAccount).setTransactions(applicationDb.getTransactionsFromCurrentBankAccount(userProfile.getDbId(), userProfile.getBankAccounts().get(iAccount).getAccountNo()));
+//        }
+//    }
 
     @Override
     public void onBackPressed() {
@@ -226,6 +242,18 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    private void displayBankAccountAlertADialog(String option) {
+        AlertDialog.Builder builder2 = new AlertDialog.Builder(this);
+
+        builder2.setTitle(String.format("%s Error", option))
+                .setMessage(String.format("You do not have enough accounts to make a %s. Add another account if you want to make a %s.", option, option.toLowerCase()))
+                .setNegativeButton("Cancel", dialogClickListener)
+                .setPositiveButton("Add Bank Account", dialogClickListener);
+
+        AlertDialog dialog2 = builder2.create();
+        dialog2.show();
     }
 
     private void displayDepositDialog() {
@@ -282,6 +310,7 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         } else {
 
             Account account = userProfile.getAccounts().get(selectedAccountIndex);
+            OpenBankAccount bankAccount = userProfile.getBankAccounts().get(selectedAccountIndex);
             account.addDepositTransaction(depositAmount);
 
             SharedPreferences.Editor prefsEditor = userPreferences.edit();
@@ -291,8 +320,11 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
             ApplicationDB applicationDb = new ApplicationDB(getApplicationContext());
             applicationDb.overwriteAccount(userProfile, account);
+            applicationDb.overwriteBankAccount(userProfile, bankAccount);
             applicationDb.saveNewTransaction(userProfile, account.getAccountNo(),
                     account.getTransactions().get(account.getTransactions().size()-1));
+            applicationDb.saveNewBankTransaction(userProfile, bankAccount.getAccountNo(),
+                    bankAccount.getTransactions().get(bankAccount.getTransactions().size()-1));
 
             Toast.makeText(this, "Deposit of $" + String.format(Locale.getDefault(), "%.2f",depositAmount) + " " + "made successfully", Toast.LENGTH_SHORT).show();
 
@@ -344,6 +376,9 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
             case R.id.nav_accounts:
                 fragmentClass = AccountOverviewFragment.class;
                 break;
+            case R.id.nav_openbankaccounts:
+                fragmentClass = OpenBankFragment.class;
+                break;
             case R.id.nav_deposit:
                 if (userProfile.getAccounts().size() > 0) {
                     displayDepositDialog();
@@ -359,44 +394,20 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                     fragmentClass = TransferFragment.class;
                 }
                 break;
+            case R.id.nav_openbank:
+                if (userProfile.getBankAccounts().size() < 2) {
+                    displayBankAccountAlertADialog("OpenBanking");
+                } else {
+                    title = "OpenBanking";
+                    fragmentClass = BankTransferFragment.class;
+                }
+                break;
             case R.id.nav_payment:
                 if (userProfile.getAccounts().size() < 1) {
                     displayAccountAlertADialog("Payment");
                 } else {
                     title = "Payment";
                     fragmentClass = PaymentFragment.class;
-                }
-                break;
-            case R.id.nav_utility_check:
-                if (userProfile.getAccounts().size() < 1) {
-                    displayAccountAlertADialog("UtilityCheck");
-                } else {
-                    title = "UtilityCheck";
-                    fragmentClass = UtilityCheckFragment.class;
-                }
-                break;
-            case R.id.nav_loan1:
-                if (userProfile.getAccounts().size() < 1) {
-                    displayAccountAlertADialog("Payment");
-                } else {
-                    title = "Get a Loan";
-                    fragmentClass = GetLoanFragment.class;
-                }
-                break;
-            case R.id.nav_loan2:
-                if (userProfile.getAccounts().size() < 1) {
-                    displayAccountAlertADialog("Payment");
-                } else {
-                    title = "Expand the loan period";
-                    fragmentClass = PeriodFragment.class;
-                }
-                break;
-            case R.id.nav_loan3:
-                if (userProfile.getAccounts().size() < 1) {
-                    displayAccountAlertADialog("Payment");
-                } else {
-                    title = "Pay interest";
-                    fragmentClass = InterestFragment.class;
                 }
                 break;
             case R.id.nav_logout:

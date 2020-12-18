@@ -9,6 +9,10 @@
             android:id="@+id/nav_accounts"
             android:icon="@drawable/icon_accounts_24"
             android:title="Accounts" />
+        <item
+            android:id="@+id/nav_openbankaccounts"
+            android:icon="@drawable/icon_accounts_24"
+            android:title="OpenBank Accounts" />
 
         <item android:title="Transaction">
             <menu>
@@ -22,33 +26,16 @@
                         android:icon="@drawable/icon_transfer_24"
                         android:title="Make a Transfer" />
                     <item
+                        android:id="@+id/nav_openbank"
+                        android:icon="@drawable/icon_transfer_24"
+                        android:title="Make a Openbanking" />
+                    <item
                         android:id="@+id/nav_payment"
                         android:icon="@drawable/icon_payment_24"
                         android:title="Make a Payment" />
-                    <item
-                        android:id="@+id/nav_utility_check"
-                        android:icon="@drawable/icon_payment_24"
-                        android:title="Check utility bill" />
                 </group>
             </menu>
-        </item>
-        <item android:title="Loan">
-            <menu>
-                <group android:checkableBehavior="single">
-                    <item
-                        android:id="@+id/nav_loan1"
-                        android:icon="@drawable/deposit_icon_24"
-                        android:title="Get a loan" />
-                    <item
-                        android:id="@+id/nav_loan2"
-                        android:icon="@drawable/icon_transfer_24"
-                        android:title="Expand the loan period" />
-                    <item
-                        android:id="@+id/nav_loan3"
-                        android:icon="@drawable/icon_payment_24"
-                        android:title="Pay interest" />
-                </group>
-            </menu>
+
         </item>
         <item android:title="Profile">
             <menu>
