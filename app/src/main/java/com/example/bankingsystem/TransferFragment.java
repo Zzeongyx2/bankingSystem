@@ -2,8 +2,10 @@ package com.example.bankingsystem;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +22,8 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -29,7 +33,8 @@ public class TransferFragment extends Fragment {
     private EditText edtTransferAmount;
     private Spinner spnReceivingAccount;
     private Button btnConfirmTransfer;
-
+    private Button btnConfirmAutoTransfer;
+    private CountDownTimer CDT;
     ArrayList<Account> accounts;
     ArrayAdapter<Account> accountAdapter;
 
@@ -57,6 +62,7 @@ public class TransferFragment extends Fragment {
         edtTransferAmount = rootView.findViewById(R.id.edt_transfer_amount);
         spnReceivingAccount = rootView.findViewById(R.id.spn_select_receiving_acc);
         btnConfirmTransfer = rootView.findViewById(R.id.btn_confirm_transfer);
+        btnConfirmAutoTransfer = rootView.findViewById(R.id.btn_confirm_auto_transfer);
 
         setValues();
 
@@ -81,6 +87,12 @@ public class TransferFragment extends Fragment {
             }
         });
 
+        btnConfirmAutoTransfer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                confirmAutoTransfer();
+            }
+        });
         setAdapters();
     }
 
@@ -97,6 +109,76 @@ public class TransferFragment extends Fragment {
         spnReceivingAccount.setSelection(1);
     }
 
+    private void confirmAutoTransfer(){//10초마다 confirmTransfer() 실시
+        final ApplicationDB applicationDb = new ApplicationDB(getActivity().getApplicationContext());
+        double transferAmount = Double.parseDouble(edtTransferAmount.getText().toString());
+        Toast.makeText(getActivity(), "Auto Transfer of $" + String.format(Locale.getDefault(), "%.2f",transferAmount) + " successfully made", Toast.LENGTH_SHORT).show();
+        CDT = new CountDownTimer(10 * 10000, 10000) {
+            public void onTick(long millisUntilFinished) {
+                //반복실행할 구문
+                int receivingAccIndex = spnReceivingAccount.getSelectedItemPosition();
+                boolean isNum = false;
+                double transferAmount = 0;
+
+                try {
+                    transferAmount = Double.parseDouble(edtTransferAmount.getText().toString());
+                    isNum = true;
+                } catch (Exception e) {
+                    Toast.makeText(getActivity(), "Please enter an amount to transfer", Toast.LENGTH_SHORT).show();
+                }
+                if (isNum) {
+                    if (spnSendingAccount.getSelectedItemPosition() == receivingAccIndex) {
+                        Toast.makeText(getActivity(), "You cannot make a transfer to the same account", Toast.LENGTH_SHORT).show();
+                    }
+                    else if(transferAmount < 0.01) {
+                        Toast.makeText(getActivity(), "The minimum amount for a transfer is $0.01", Toast.LENGTH_SHORT).show();
+
+                    } else if (transferAmount > userProfile.getAccounts().get(spnSendingAccount.getSelectedItemPosition()).getAccountBalance()) {
+
+                        Account acc = (Account) spnSendingAccount.getSelectedItem();
+                        Toast.makeText(getActivity(), "The account," + " " + acc.toString() + " " + "does not have sufficient funds to make this transfer", Toast.LENGTH_LONG).show();
+                    } else {
+
+                        int sendingAccIndex = spnSendingAccount.getSelectedItemPosition();
+
+                        Account sendingAccount = (Account) spnSendingAccount.getItemAtPosition(sendingAccIndex);
+                        Account receivingAccount = (Account) spnReceivingAccount.getItemAtPosition(receivingAccIndex);
+
+                        userProfile.addTransferTransaction(sendingAccount, receivingAccount, transferAmount);
+
+                        spnSendingAccount.setAdapter(accountAdapter);
+                        spnReceivingAccount.setAdapter(accountAdapter);
+
+                        spnSendingAccount.setSelection(sendingAccIndex);
+                        spnReceivingAccount.setSelection(receivingAccIndex);
+
+
+
+                        applicationDb.overwriteAccount(userProfile, sendingAccount);
+                        applicationDb.overwriteAccount(userProfile, receivingAccount);
+
+                        applicationDb.saveNewTransaction(userProfile, sendingAccount.getAccountNo(),
+                                sendingAccount.getTransactions().get(sendingAccount.getTransactions().size()-1));
+                        applicationDb.saveNewTransaction(userProfile, receivingAccount.getAccountNo(),
+                                receivingAccount.getTransactions().get(receivingAccount.getTransactions().size()-1));
+
+
+                        SharedPreferences.Editor prefsEditor = userPreferences.edit();
+                        json = gson.toJson(userProfile);
+                        prefsEditor.putString("LastProfileUsed", json).apply();
+
+                    }
+                }
+            }
+            public void onFinish() {
+                //마지막에 실행할 구문
+                CDT.start();
+            }
+        };
+
+        CDT.start(); //CountDownTimer 실행
+
+    }
     /**
      * method that confirms the transfer
      */
