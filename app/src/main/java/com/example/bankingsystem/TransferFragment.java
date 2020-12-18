@@ -2,8 +2,10 @@ package com.example.bankingsystem;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +22,8 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -29,7 +33,8 @@ public class TransferFragment extends Fragment {
     private EditText edtTransferAmount;
     private Spinner spnReceivingAccount;
     private Button btnConfirmTransfer;
-
+    private Button btnConfirmAutoTransfer;
+    private CountDownTimer CDT;
     ArrayList<Account> accounts;
     ArrayAdapter<Account> accountAdapter;
 
@@ -57,6 +62,7 @@ public class TransferFragment extends Fragment {
         edtTransferAmount = rootView.findViewById(R.id.edt_transfer_amount);
         spnReceivingAccount = rootView.findViewById(R.id.spn_select_receiving_acc);
         btnConfirmTransfer = rootView.findViewById(R.id.btn_confirm_transfer);
+        btnConfirmAutoTransfer = rootView.findViewById(R.id.btn_confirm_auto_transfer);
 
         setValues();
 
@@ -81,6 +87,12 @@ public class TransferFragment extends Fragment {
             }
         });
 
+        btnConfirmAutoTransfer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                confirmAutoTransfer();
+            }
+        });
         setAdapters();
     }
 
@@ -97,6 +109,23 @@ public class TransferFragment extends Fragment {
         spnReceivingAccount.setSelection(1);
     }
 
+    private void confirmAutoTransfer(){//10초마다 confirmTransfer() 실시
+
+
+        CDT = new CountDownTimer(10 * 10000, 10000) {
+            public void onTick(long millisUntilFinished) {
+                //반복실행할 구문
+                confirmTransfer();
+            }
+            public void onFinish() {
+                //마지막에 실행할 구문
+                CDT.start();
+            }
+        };
+
+        CDT.start(); //CountDownTimer 실행
+
+    }
     /**
      * method that confirms the transfer
      */
