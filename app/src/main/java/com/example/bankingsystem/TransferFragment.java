@@ -119,7 +119,7 @@ public class TransferFragment extends Fragment {
             }
             public void onFinish() {
                 //마지막에 실행할 구문
-                
+                CDT.start();
             }
         };
 
