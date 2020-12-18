@@ -14,13 +14,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.bankingsystem.Model.Account;
-import com.example.bankingsystem.Model.Loan;
 import com.example.bankingsystem.Model.Profile;
-import com.example.bankingsystem.Model.db.ApplicationDB;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -83,14 +80,14 @@ public class PeriodFragment extends Fragment {
         btnExpandPeriod.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                confirmGetLoan();
+                confirmExpandPeriod();
             }
         });
 
         setAdapters();
     }
 
-    private void confirmGetLoan() {
+    private void confirmExpandPeriod() {
         int day = dtDate.getDayOfMonth();
         int month = dtDate.getMonth();
         int year = dtDate.getYear();

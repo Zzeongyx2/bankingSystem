@@ -29,7 +29,7 @@ public class InterestFragment extends Fragment {
     private TextView txtAccTitle;
     private TextView txtCredit;
     private EditText edtInterestAmount;
-    private Button btnGetLoan;
+    private Button btnPayInterest;
 
     ArrayList<Account> accounts;
     ArrayAdapter<Account> accountAdapter;
@@ -57,7 +57,7 @@ public class InterestFragment extends Fragment {
         account = rootView.findViewById(R.id.spn_select_acc);
         txtCredit = rootView.findViewById(R.id.txt_credit);
         edtInterestAmount = rootView.findViewById(R.id.edt_interest_amount);
-        btnGetLoan = rootView.findViewById(R.id.btn_pay_interest);
+        btnPayInterest = rootView.findViewById(R.id.btn_pay_interest);
 
         setValues();
 
@@ -80,7 +80,7 @@ public class InterestFragment extends Fragment {
         json = userPreferences.getString("LastProfileUsed", "");
         userProfile = gson.fromJson(json, Profile.class);
         txtCredit.setText(userProfile.getCredit());
-        btnGetLoan.setOnClickListener(new View.OnClickListener() {
+        btnPayInterest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 confirmPayInterest();
