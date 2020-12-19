@@ -9,6 +9,10 @@
             android:id="@+id/nav_accounts"
             android:icon="@drawable/icon_accounts_24"
             android:title="Accounts" />
+        <item
+            android:id="@+id/nav_openbankaccounts"
+            android:icon="@drawable/icon_accounts_24"
+            android:title="OpenBank Accounts" />
 
         <item android:title="Transaction">
             <menu>
@@ -25,6 +29,10 @@
                         android:id="@+id/nav_payment"
                         android:icon="@drawable/icon_payment_24"
                         android:title="Make a Payment" />
+                    <item
+                        android:id="@+id/nav_openbank"
+                        android:icon="@drawable/icon_transfer_24"
+                        android:title="Make a Openbanking" />
                     <item
                         android:id="@+id/nav_utility_check"
                         android:icon="@drawable/icon_payment_24"

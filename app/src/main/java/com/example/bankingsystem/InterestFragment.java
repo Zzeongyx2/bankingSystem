@@ -3,6 +3,7 @@ package com.example.bankingsystem;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +15,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.bankingsystem.Model.Account;
+import com.example.bankingsystem.Model.BankLoan;
 import com.example.bankingsystem.Model.Loan;
 import com.example.bankingsystem.Model.Profile;
 import com.example.bankingsystem.Model.db.ApplicationDB;
+import com.example.bankingsystem.Model.db.GlobalStorage;
 import com.google.gson.Gson;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -27,9 +31,10 @@ import static android.content.Context.MODE_PRIVATE;
 public class InterestFragment extends Fragment {
     private Spinner account;
     private TextView txtAccTitle;
-    private TextView txtCredit;
-    private EditText edtInterestAmount;
+    private TextView edtInterestAmount;
     private Button btnPayInterest;
+    private double ChangeAmount;
+    private double CurrentAmount;
 
     ArrayList<Account> accounts;
     ArrayAdapter<Account> accountAdapter;
@@ -55,7 +60,6 @@ public class InterestFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_interest, container, false);
         txtAccTitle = rootView.findViewById(R.id.txt_acc_title);
         account = rootView.findViewById(R.id.spn_select_acc);
-        txtCredit = rootView.findViewById(R.id.txt_credit);
         edtInterestAmount = rootView.findViewById(R.id.edt_interest_amount);
         btnPayInterest = rootView.findViewById(R.id.btn_pay_interest);
 
@@ -73,13 +77,11 @@ public class InterestFragment extends Fragment {
     }
 
     private void setValues() {
-
         userPreferences = getActivity().getSharedPreferences("LastProfileUsed", MODE_PRIVATE);
 
         gson = new Gson();
         json = userPreferences.getString("LastProfileUsed", "");
         userProfile = gson.fromJson(json, Profile.class);
-        txtCredit.setText(userProfile.getCredit());
         btnPayInterest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -88,41 +90,34 @@ public class InterestFragment extends Fragment {
         });
 
         setAdapters();
+
+        CurrentAmount = (double) GlobalStorage.bankLoanHashMap.get(GlobalStorage.currentSelectionAddressString).getAmount();
+        edtInterestAmount.setText(String.valueOf(CurrentAmount));
+
     }
 
     private void confirmPayInterest() {
-        int index = account.getSelectedItemPosition();
-        boolean isNum = false;
-        double loanAmount = 0;
+            int index = account.getSelectedItemPosition();
 
-        try {
-            loanAmount = Double.parseDouble(edtInterestAmount.getText().toString());
-            isNum = true;
-        } catch (Exception e) {
-            Toast.makeText(getActivity(), "Please enter an amount to get a loan", Toast.LENGTH_SHORT).show();
-        }
+            BankLoan changeLoanAmount = GlobalStorage.bankLoanHashMap.get(GlobalStorage.currentSelectionAddressString);
+            changeLoanAmount.setAmount(0);
 
-        if (isNum) {
-            if (loanAmount > userProfile.getAccounts().get(index).getAccountBalance()) {
-                Toast.makeText(getActivity(), "You cannot pay a interest much than your balance", Toast.LENGTH_LONG).show();
-            }
-            else {
-                Account a = (Account) account.getItemAtPosition(index);
-                userProfile.getLoan(a, -loanAmount);
-                account.setAdapter(accountAdapter);
+            GlobalStorage.bankLoanHashMap.put(GlobalStorage.currentSelectionAddressString, changeLoanAmount);
 
-                ApplicationDB applicationDb = new ApplicationDB(getActivity().getApplicationContext());
-                applicationDb.overwriteAccount(userProfile, a);
-                applicationDb.saveNewLoan(userProfile, a.getAccountNo(), new Loan(a.getAccountName(), "20201010",loanAmount));
+            ChangeAmount = Double.parseDouble(String.format("%.2f", GlobalStorage.bankLoanHashMap.get(GlobalStorage.currentSelectionAddressString).getAmount()));
 
-                SharedPreferences.Editor prefsEditor = userPreferences.edit();
-                json = gson.toJson(userProfile);
-                prefsEditor.putString("LastProfileUsed", json).apply();
+            edtInterestAmount.setText(String.valueOf(ChangeAmount));
 
-                edtInterestAmount.getText().clear();
+            Account accs = (Account) account.getItemAtPosition(index);
 
-                Toast.makeText(getActivity(), "Pay interest of $" + String.format(Locale.getDefault(), "%.2f",loanAmount) , Toast.LENGTH_SHORT).show();
-            }
-        }
+            userProfile.setLoan(accs, CurrentAmount);
+            account.setAdapter(accountAdapter);
+
+            SharedPreferences.Editor prefsEditor = userPreferences.edit();
+            json = gson.toJson(userProfile);
+            prefsEditor.putString("LastProfileUsed", json).apply();
+
+            Toast.makeText(getActivity(), "Pay interest of $" + String.format(String.valueOf(CurrentAmount)), Toast.LENGTH_SHORT).show();
     }
+
 }

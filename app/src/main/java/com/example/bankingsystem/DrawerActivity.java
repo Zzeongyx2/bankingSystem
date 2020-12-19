@@ -29,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.bankingsystem.Model.Account;
+import com.example.bankingsystem.Model.OpenBankAccount;
 import com.example.bankingsystem.Model.Profile;
 import com.example.bankingsystem.Model.db.ApplicationDB;
 import com.google.gson.Gson;
@@ -38,7 +39,8 @@ import java.util.Locale;
 public class DrawerActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
     public enum manualNavID {
-        ACCOUNTS_ID
+        ACCOUNTS_ID,
+        OPEN_ID
     }
 
     private DrawerLayout drawerLayout;
@@ -83,16 +85,37 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
         }
     };
 
+    private DialogInterface.OnClickListener dialogClickListener2 = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialogInterface, int i) {
+            if (i == DialogInterface.BUTTON_POSITIVE) {
+                Bundle bundle = new Bundle();
+                bundle.putBoolean("DisplayOpenAccountDialog", true);
+                manualNavigation(manualNavID.OPEN_ID, bundle);
+            }
+        }
+    };
+
     public void manualNavigation(manualNavID id, Bundle bundle) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
+        if (id == manualNavID.OPEN_ID) {
+            OpenBankingFragment openBankingFragment = new OpenBankingFragment();
+            if (bundle != null) {
+                openBankingFragment.setArguments(bundle);
+            }
+            ft.replace(R.id.flContent, openBankingFragment).commit();
+            navView.setCheckedItem(R.id.nav_openbankaccounts);
+            setTitle("OpenBanking");
+        } else if (id == manualNavID.ACCOUNTS_ID) {
             AccountOverviewFragment accountOverviewFragment = new AccountOverviewFragment();
             if (bundle != null) {
                 accountOverviewFragment.setArguments(bundle);
-            }
-            ft.replace(R.id.flContent, accountOverviewFragment).commit();
+        }
+        ft.replace(R.id.flContent, accountOverviewFragment).commit();
             navView.setCheckedItem(R.id.nav_accounts);
             setTitle("Accounts");
+        }
 
         drawerLayout.closeDrawers();
     }
@@ -179,9 +202,14 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
         userProfile.setPayeesFromDB(applicationDb.getPayeesFromCurrentProfile(userProfile.getDbId()));
         userProfile.setAccountsFromDB(applicationDb.getAccountsFromCurrentProfile(userProfile.getDbId()));
+        userProfile.setBankAccountsFromDB(applicationDb.getBankAccountsFromCurrentProfile(userProfile.getDbId()));
 
         for (int iAccount = 0; iAccount < userProfile.getAccounts().size(); iAccount++) {
             userProfile.getAccounts().get(iAccount).setTransactions(applicationDb.getTransactionsFromCurrentAccount(userProfile.getDbId(), userProfile.getAccounts().get(iAccount).getAccountNo()));
+        }
+
+        for (int iAccount = 0; iAccount < userProfile.getBankAccounts().size(); iAccount++) {
+            userProfile.getBankAccounts().get(iAccount).setTransactions(applicationDb.getTransactionsFromCurrentBankAccount(userProfile.getDbId(), userProfile.getBankAccounts().get(iAccount).getAccountNo()));
         }
     }
 
@@ -226,6 +254,18 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    private void displayBankAccountAlertADialog(String option) {
+        AlertDialog.Builder builder2 = new AlertDialog.Builder(this);
+
+        builder2.setTitle(String.format("%s Error", option))
+                .setMessage(String.format("You do not have enough accounts to make a %s. Add another account if you want to make a %s.", option, option.toLowerCase()))
+                .setNegativeButton("Cancel", dialogClickListener2)
+                .setPositiveButton("Add Bank Account", dialogClickListener2);
+
+        AlertDialog dialog2 = builder2.create();
+        dialog2.show();
     }
 
     private void displayDepositDialog() {
@@ -283,6 +323,8 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
             Account account = userProfile.getAccounts().get(selectedAccountIndex);
             account.addDepositTransaction(depositAmount);
+            OpenBankAccount bankAccount = userProfile.getBankAccounts().get(selectedAccountIndex);
+            bankAccount.addDepositTransaction(depositAmount);
 
             SharedPreferences.Editor prefsEditor = userPreferences.edit();
             gson = new Gson();
@@ -291,8 +333,11 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
             ApplicationDB applicationDb = new ApplicationDB(getApplicationContext());
             applicationDb.overwriteAccount(userProfile, account);
+            applicationDb.overwriteBankAccount(userProfile, bankAccount);
             applicationDb.saveNewTransaction(userProfile, account.getAccountNo(),
                     account.getTransactions().get(account.getTransactions().size()-1));
+            applicationDb.saveNewBankTransaction(userProfile, bankAccount.getAccountNo(),
+                    bankAccount.getTransactions().get(bankAccount.getTransactions().size()-1));
 
             Toast.makeText(this, "Deposit of $" + String.format(Locale.getDefault(), "%.2f",depositAmount) + " " + "made successfully", Toast.LENGTH_SHORT).show();
 
@@ -344,6 +389,9 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
             case R.id.nav_accounts:
                 fragmentClass = AccountOverviewFragment.class;
                 break;
+            case R.id.nav_openbankaccounts:
+                fragmentClass = OpenBankingFragment.class;
+                break;
             case R.id.nav_deposit:
                 if (userProfile.getAccounts().size() > 0) {
                     displayDepositDialog();
@@ -357,6 +405,14 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
                 } else {
                     title = "Transfer";
                     fragmentClass = TransferFragment.class;
+                }
+                break;
+            case R.id.nav_openbank:
+                if (userProfile.getBankAccounts().size() < 2) {
+                    displayBankAccountAlertADialog("OpenBanking");
+                } else {
+                    title = "OpenBanking";
+                    fragmentClass = BankTransferFragment.class;
                 }
                 break;
             case R.id.nav_payment:

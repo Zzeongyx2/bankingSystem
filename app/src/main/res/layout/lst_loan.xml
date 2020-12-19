@@ -1,6 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
+    <ImageView
+        android:id="@+id/img_transaction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/lst_deposit_icon" />
+
+
+    <TextView
+        android:id="@+id/txt_loan_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        app:layout_constraintStart_toEndOf="@+id/img_transaction"
+        tools:text="TRANS_NAME" />
+
+    <TextView
+        android:id="@+id/txt_loan_timestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/txt_loan_name"
+        app:layout_constraintStart_toEndOf="@+id/img_transaction"
+        tools:text="TRANS_TIMESTAMP" />
+
+    <TextView
+        android:id="@+id/txt_loan_deadline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        app:layout_constraintStart_toEndOf="@+id/img_transaction"
+        app:layout_constraintTop_toBottomOf="@+id/txt_loan_timestamp"
+        tools:text="loan deadline" />
+
+    <TextView
+        android:id="@+id/txt_loan_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textAppearance="@android:style/TextAppearance.Holo.Small"
+        android:textColor="@android:color/holo_red_light"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/img_transaction"
+        app:layout_constraintTop_toBottomOf="@+id/txt_loan_deadline"
+        tools:text="AMOUNT: $AMOUNT" />
 </android.support.constraint.ConstraintLayout>

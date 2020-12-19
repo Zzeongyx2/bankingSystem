@@ -28,20 +28,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txt_acc_title" />
 
-    <TextView
-        android:id="@+id/txt_credit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/credit"
-        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.199" />
 
-    <EditText
+    <TextView
         android:id="@+id/edt_interest_amount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -49,18 +37,16 @@
         app:layout_constraintBottom_toTopOf="@+id/btn_pay_interest"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_credit"
-        app:layout_constraintVertical_bias="0.712" />
+        app:layout_constraintTop_toBottomOf="@+id/spn_select_acc" />
 
     <Button
         android:id="@+id/btn_pay_interest"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="320dp"
-        android:text="@string/pay_interest"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="pay"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edt_interest_amount" />
 
 
 </android.support.constraint.ConstraintLayout>

@@ -7,7 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.bankingsystem.Model.Account;
+import com.example.bankingsystem.Model.BankTransaction;
 import com.example.bankingsystem.Model.Loan;
+import com.example.bankingsystem.Model.OpenBankAccount;
 import com.example.bankingsystem.Model.Payee;
 import com.example.bankingsystem.Model.Profile;
 import com.example.bankingsystem.Model.Transaction;
@@ -22,6 +24,7 @@ public class ApplicationDB {
 
     private static final String DB_NAME = "userAccounts1.db";
     private static final int DB_VERSION = 2;
+
 
     //------------------------------------------------------------------- PROFILE TABLE ----------------------- \\
     private static final String PROFILES_TABLE = "Profiles";
@@ -61,6 +64,20 @@ public class ApplicationDB {
     private static final int ACCOUNT_BALANCE_COLUMN = 3;
     //------------------------------------------------------------------- ACCOUNT TABLE ----------------------- \\
 
+    //------------------------------------------------------------------- BANKACCOUNT TABLE ----------------------- \\
+    private static final String BANK_ACCOUNTS_TABLE = "BankAccounts";
+
+    private static final String BANK_ACCOUNT_NO = "Bank_AccountNo";
+    private static final String BANK_ACCOUNT_BANK = "Bank_AccountBank";
+    private static final String BANK_ACCOUNT_NAME = "BankAccountName";
+    private static final String BANK_ACCOUNT_BALANCE = "BankAccountBalance";
+
+    private static final int BANK_ACCOUNT_NO_COLUMN = 1;
+    private static final int BANK_ACCOUNT_BANK_COLUMN = 2;
+    private static final int BANK_ACCOUNT_NAME_COLUMN = 3;
+    private static final int BANK_ACCOUNT_BALANCE_COLUMN = 4;
+    //------------------------------------------------------------------- BANKACCOUNT TABLE ----------------------- \\
+
     //------------------------------------------------------------------- TRANSACTION TABLE ----------------------- \\
     private static final String TRANSACTIONS_TABLE = "Transactions";
 
@@ -79,6 +96,30 @@ public class ApplicationDB {
     private static final int TRANSACTION_PAYEE_COLUMN = 6;
     private static final int TRANSACTION_AMOUNT_COLUMN = 7;
     private static final int TRANSACTION_TYPE_COLUMN = 8;
+    //------------------------------------------------------------------- TRANSACTION TABLE ----------------------- \\
+
+    //------------------------------------------------------------------- TRANSACTION TABLE ----------------------- \\
+    private static final String BANK_TRANSACTIONS_TABLE = "Bank_Transactions";
+
+    private static final String BANK_TRANSACTION_ID = "Bank_TransactionID";
+    private static final String BANK_TIMESTAMP = "BankTimestamp";
+    private static final String BANK_SENDING_BANK_ACCOUNT = "BankSending_Bank_Account";
+    private static final String BANK_DESTINATION_BANK_ACCOUNT = "BankDestination_Bank_Account";
+    private static final String BANK_SENDING_ACCOUNT = "BankSendingAccount";
+    private static final String BANK_DESTINATION_ACCOUNT = "BankDestinationAccount";
+    private static final String BANK_TRANSACTION_PAYEE = "BankPayee";
+    private static final String BANK_TRANSACTION_AMOUNT = "BankAmount";
+    private static final String BANK_TRANS_TYPE = "BankType";
+
+    private static final int BANK_TRANSACTION_ID_COLUMN = 2;
+    private static final int BANK_TIMESTAMP_COLUMN = 3;
+    private static final int BANK_SENDING_BANK_ACCOUNT_COLUMN = 4;
+    private static final int BANK_DESTINATION_BANK_ACCOUNT_COLUMN = 5;
+    private static final int BANK_SENDING_ACCOUNT_COLUMN = 6;
+    private static final int BANK_DESTINATION_ACCOUNT_COLUMN = 7;
+    private static final int BANK_TRANSACTION_PAYEE_COLUMN = 8;
+    private static final int BANK_TRANSACTION_AMOUNT_COLUMN = 9;
+    private static final int BANK_TRANSACTION_TYPE_COLUMN = 10;
     //------------------------------------------------------------------- TRANSACTION TABLE ----------------------- \\
 
     //------------------------------------------------------------------- LOAN TABLE ----------------------- \\
@@ -117,6 +158,16 @@ public class ApplicationDB {
                     "PRIMARY KEY(" + PROFILE_ID + "," + ACCOUNT_NO + "), " +
                     "FOREIGN KEY(" + PROFILE_ID + ") REFERENCES " + PROFILES_TABLE + "(" + PROFILE_ID + "))";
 
+    private static final String CREATE_BANK_ACCOUNTS_TABLE =
+            "CREATE TABLE " + BANK_ACCOUNTS_TABLE + " (" +
+                    PROFILE_ID + " INTEGER NOT NULL, " +
+                    BANK_ACCOUNT_NO + " TEXT NOT NULL, " +
+                    BANK_ACCOUNT_BANK + " TEXT, " +
+                    BANK_ACCOUNT_NAME + " TEXT, " +
+                    BANK_ACCOUNT_BALANCE + " REAL, " +
+                    "PRIMARY KEY(" + PROFILE_ID + "," + BANK_ACCOUNT_NO + "), " +
+                    "FOREIGN KEY(" + PROFILE_ID + ") REFERENCES " + PROFILES_TABLE + "(" + PROFILE_ID + "))";
+
     private static final String CREATE_TRANSACTIONS_TABLE =
             "CREATE TABLE " + TRANSACTIONS_TABLE + " (" +
                     PROFILE_ID + " INTEGER NOT NULL, " +
@@ -131,6 +182,22 @@ public class ApplicationDB {
                     "PRIMARY KEY(" + PROFILE_ID + "," + ACCOUNT_NO + "," + TRANSACTION_ID + "), " +
                     "FOREIGN KEY(" + PROFILE_ID + "," + ACCOUNT_NO + ") REFERENCES " +
                     ACCOUNTS_TABLE + "(" + PROFILE_ID + "," + ACCOUNT_NO + ")," +
+                    "FOREIGN KEY(" + PROFILE_ID + ") REFERENCES " + PROFILES_TABLE + "(" + PROFILE_ID + "))";
+
+    private static final String CREATE_BANK_TRANSACTIONS_TABLE =
+            "CREATE TABLE " + BANK_TRANSACTIONS_TABLE + " (" +
+                    PROFILE_ID + " INTEGER NOT NULL, " +
+                    BANK_ACCOUNT_NO + " TEXT NOT NULL, " +
+                    BANK_TRANSACTION_ID + " TEXT NOT NULL, " +
+                    BANK_TIMESTAMP + " TEXT, " +
+                    BANK_SENDING_ACCOUNT + " TEXT, " +
+                    BANK_DESTINATION_ACCOUNT + " TEXT, " +
+                    BANK_TRANSACTION_PAYEE + " TEXT, " +
+                    BANK_TRANSACTION_AMOUNT + " REAL, " +
+                    BANK_TRANS_TYPE + " TEXT, " +
+                    "PRIMARY KEY(" + PROFILE_ID + "," + BANK_ACCOUNT_NO + "," + BANK_TRANSACTION_ID + "), " +
+                    "FOREIGN KEY(" + PROFILE_ID + "," + BANK_ACCOUNT_NO + ") REFERENCES " +
+                    BANK_ACCOUNTS_TABLE + "(" + PROFILE_ID + "," + BANK_ACCOUNT_NO + ")," +
                     "FOREIGN KEY(" + PROFILE_ID + ") REFERENCES " + PROFILES_TABLE + "(" + PROFILE_ID + "))";
 
     private static final String CREATE_LOANS_TABLE =
@@ -232,6 +299,39 @@ public class ApplicationDB {
         database.close();
     }
 
+    public void saveNewBankTransaction(Profile profile, String accountNo, BankTransaction bankTransaction) {
+        database = openHelper.getWritableDatabase();
+
+        ContentValues cv = new ContentValues();
+        cv.put(PROFILE_ID, profile.getDbId());
+        cv.put(BANK_ACCOUNT_NO, accountNo);
+        cv.put(BANK_TRANSACTION_ID, bankTransaction.getTransactionID());
+        cv.put(BANK_TIMESTAMP, bankTransaction.getTimestamp());
+
+        if (bankTransaction.getTransactionType() == BankTransaction.TRANSACTION_TYPE.TRANSFER) {
+            cv.put(BANK_SENDING_ACCOUNT, bankTransaction.getSendingAccount());
+            cv.put(BANK_DESTINATION_ACCOUNT, bankTransaction.getDestinationAccount());
+            cv.putNull(BANK_TRANSACTION_PAYEE);
+        } else if (bankTransaction.getTransactionType() == BankTransaction.TRANSACTION_TYPE.PAYMENT) {
+            cv.putNull(BANK_SENDING_ACCOUNT);
+            cv.putNull(BANK_DESTINATION_ACCOUNT);
+            cv.put(BANK_TRANSACTION_PAYEE, bankTransaction.getPayee());
+        } else if (bankTransaction.getTransactionType() == BankTransaction.TRANSACTION_TYPE.DEPOSIT) {
+            cv.putNull(BANK_SENDING_ACCOUNT);
+            cv.putNull(BANK_DESTINATION_ACCOUNT);
+            cv.putNull(BANK_TRANSACTION_PAYEE);
+        }
+
+        cv.put(BANK_TRANSACTION_AMOUNT, bankTransaction.getAmount());
+        cv.put(BANK_TRANS_TYPE, bankTransaction.getTransactionType().toString());
+
+        long id = database.insert(BANK_TRANSACTIONS_TABLE, null, cv);
+
+        bankTransaction.setDbId(id);
+
+        database.close();
+    }
+
     public void saveNewLoan(Profile profile, String accountNo, Loan loan) {
         database = openHelper.getWritableDatabase();
 
@@ -264,6 +364,22 @@ public class ApplicationDB {
 
         database.update(ACCOUNTS_TABLE, cv, PROFILE_ID + "=? AND " + ACCOUNT_NO +"=?",
                 new String[] {String.valueOf(profile.getDbId()), account.getAccountNo()});
+        database.close();
+    }
+
+    public void overwriteBankAccount(Profile profile, OpenBankAccount bankAccount) {
+
+        database = openHelper.getWritableDatabase();
+
+        ContentValues cv = new ContentValues();
+        cv.put(PROFILE_ID,profile.getDbId());
+        cv.put(BANK_ACCOUNT_NO,bankAccount.getAccountNo());
+        cv.put(BANK_ACCOUNT_BANK,bankAccount.getAccountBank());
+        cv.put(BANK_ACCOUNT_NAME,bankAccount.getAccountName());
+        cv.put(BANK_ACCOUNT_BALANCE, bankAccount.getAccountBalance());
+
+        database.update(BANK_ACCOUNTS_TABLE, cv, PROFILE_ID + "=? AND " + BANK_ACCOUNT_NO +"=?",
+                new String[] {String.valueOf(profile.getDbId()), bankAccount.getAccountNo()});
         database.close();
     }
     public void saveNewAccount(Profile profile, Account account) {
@@ -368,6 +484,24 @@ public class ApplicationDB {
         return loan;
     }
 
+    public void saveNewBankAccount(Profile profile, OpenBankAccount bankAccount) {
+
+        database = openHelper.getWritableDatabase();
+
+        ContentValues cv = new ContentValues();
+        cv.put(PROFILE_ID, profile.getDbId());
+        cv.put(BANK_ACCOUNT_NO, bankAccount.getAccountNo());
+        cv.put(BANK_ACCOUNT_BANK, bankAccount.getAccountBank());
+        cv.put(BANK_ACCOUNT_NAME, bankAccount.getAccountName());
+        cv.put(BANK_ACCOUNT_BALANCE, bankAccount.getAccountBalance());
+
+        long id = database.insert(BANK_ACCOUNTS_TABLE, null, cv);
+
+        bankAccount.setDbID(id);
+
+        database.close();
+    }
+
     public ArrayList<Transaction> getTransactionsFromCurrentAccount(long profileID, String accountNo) {
 
         ArrayList<Transaction> transactions = new ArrayList<>();
@@ -382,6 +516,22 @@ public class ApplicationDB {
         database.close();
 
         return transactions;
+    }
+
+    public ArrayList<BankTransaction> getTransactionsFromCurrentBankAccount(long profileID, String accountNo) {
+
+        ArrayList<BankTransaction> bankTransactions = new ArrayList<>();
+        database = openHelper.getReadableDatabase();
+
+        Cursor cursor = database.query(BANK_TRANSACTIONS_TABLE, null, null, null, null,
+                null ,null);
+
+        getBankTransactionsFromCursor(profileID, accountNo, bankTransactions, cursor);
+
+        cursor.close();
+        database.close();
+
+        return bankTransactions;
     }
 
     private void getTransactionsFromCursor(long profileID, String accountNo, ArrayList<Transaction> transactions, Cursor cursor) {
@@ -412,6 +562,34 @@ public class ApplicationDB {
         }
     }
 
+    private void getBankTransactionsFromCursor(long profileID, String accountNo, ArrayList<BankTransaction> bankTransactions, Cursor cursor) {
+
+        while (cursor.moveToNext()) {
+
+            if (profileID == cursor.getLong(PROFILE_ID_COLUMN)) {
+                long id = cursor.getLong(PROFILE_ID_COLUMN);
+                if (accountNo.equals(cursor.getString(BANK_ACCOUNT_NO_COLUMN))) {
+                    String transactionID = cursor.getString(BANK_TRANSACTION_ID_COLUMN);
+                    String timestamp = cursor.getString(BANK_TIMESTAMP_COLUMN);
+                    String sendingAccount = cursor.getString(BANK_SENDING_ACCOUNT_COLUMN);
+                    String destinationAccount = cursor.getString(BANK_DESTINATION_ACCOUNT_COLUMN);
+                    String payee = cursor.getString(BANK_TRANSACTION_PAYEE_COLUMN);
+                    double amount = cursor.getDouble(BANK_TRANSACTION_AMOUNT_COLUMN);
+                    BankTransaction.TRANSACTION_TYPE transactionType = BankTransaction.TRANSACTION_TYPE.valueOf(cursor.getString(BANK_TRANSACTION_TYPE_COLUMN));
+
+                    if (transactionType == BankTransaction.TRANSACTION_TYPE.PAYMENT) {
+                        bankTransactions.add(new BankTransaction(transactionID, timestamp, payee, amount, id));
+                    } else if (transactionType == BankTransaction.TRANSACTION_TYPE.TRANSFER) {
+                        bankTransactions.add(new BankTransaction(transactionID, timestamp, sendingAccount, destinationAccount, amount, id));
+                    } else if (transactionType == BankTransaction.TRANSACTION_TYPE.DEPOSIT) {
+                        bankTransactions.add(new BankTransaction(transactionID, timestamp, amount, id));
+                    }
+                }
+
+            }
+        }
+    }
+
     public ArrayList<Account> getAccountsFromCurrentProfile(long profileID) {
 
         ArrayList<Account> accounts = new ArrayList<>();
@@ -425,6 +603,21 @@ public class ApplicationDB {
 
         return accounts;
     }
+
+    public ArrayList<OpenBankAccount> getBankAccountsFromCurrentProfile(long profileID) {
+
+        ArrayList<OpenBankAccount> accounts = new ArrayList<>();
+        database = openHelper.getReadableDatabase();
+        Cursor cursor = database.query(BANK_ACCOUNTS_TABLE, null, null, null, null,
+                null ,null);
+        getBankAccountsFromCursor(profileID, accounts, cursor);
+
+        cursor.close();
+        database.close();
+
+        return accounts;
+    }
+
     private void getAccountsFromCursor(long profileID, ArrayList<Account> accounts, Cursor cursor) {
 
         while (cursor.moveToNext()) {
@@ -436,6 +629,22 @@ public class ApplicationDB {
                 double accountBalance = cursor.getDouble(ACCOUNT_BALANCE_COLUMN);
 
                 accounts.add(new Account(accountName, accountNo, accountBalance, id));
+            }
+        }
+    }
+
+    private void getBankAccountsFromCursor(long profileID, ArrayList<OpenBankAccount> bankAccounts, Cursor cursor) {
+
+        while (cursor.moveToNext()) {
+
+            if (profileID == cursor.getLong(PROFILE_ID_COLUMN)) {
+                long id = cursor.getLong(PROFILE_ID_COLUMN);
+                String accountNo = cursor.getString(BANK_ACCOUNT_NO_COLUMN);
+                String accountBank = cursor.getString(BANK_ACCOUNT_BANK_COLUMN);
+                String accountName = cursor.getString(BANK_ACCOUNT_NAME_COLUMN);
+                double accountBalance = cursor.getDouble(BANK_ACCOUNT_BALANCE_COLUMN);
+
+                bankAccounts.add(new OpenBankAccount(accountBank, accountName, accountNo, accountBalance, id));
             }
         }
     }
@@ -452,7 +661,9 @@ public class ApplicationDB {
             db.execSQL(CREATE_PROFILES_TABLE);
             db.execSQL(CREATE_PAYEES_TABLE);
             db.execSQL(CREATE_ACCOUNTS_TABLE);
+            db.execSQL(CREATE_BANK_ACCOUNTS_TABLE);
             db.execSQL(CREATE_TRANSACTIONS_TABLE);
+            db.execSQL(CREATE_BANK_TRANSACTIONS_TABLE);
             db.execSQL(CREATE_LOANS_TABLE);
         }
 
@@ -463,6 +674,8 @@ public class ApplicationDB {
             db.execSQL("DROP TABLE IF EXISTS " + PAYEES_TABLE);
             db.execSQL("DROP TABLE IF EXISTS " + ACCOUNTS_TABLE);
             db.execSQL("DROP TABLE IF EXISTS " + TRANSACTIONS_TABLE);
+            db.execSQL("DROP TABLE IF EXISTS " + BANK_ACCOUNTS_TABLE);
+            db.execSQL("DROP TABLE IF EXISTS " + BANK_TRANSACTIONS_TABLE);
             db.execSQL("DROP TABLE IF EXISTS " + LOANS_TABLE);
             onCreate(db);
         }
