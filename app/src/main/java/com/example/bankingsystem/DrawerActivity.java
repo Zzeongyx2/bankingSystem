@@ -323,8 +323,8 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
             Account account = userProfile.getAccounts().get(selectedAccountIndex);
             account.addDepositTransaction(depositAmount);
-            OpenBankAccount bankAccount = userProfile.getBankAccounts().get(selectedAccountIndex);
-            bankAccount.addDepositTransaction(depositAmount);
+            //OpenBankAccount bankAccount = userProfile.getBankAccounts().get(selectedAccountIndex);
+            //bankAccount.addDepositTransaction(depositAmount);
 
             SharedPreferences.Editor prefsEditor = userPreferences.edit();
             gson = new Gson();
@@ -333,11 +333,11 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
 
             ApplicationDB applicationDb = new ApplicationDB(getApplicationContext());
             applicationDb.overwriteAccount(userProfile, account);
-            applicationDb.overwriteBankAccount(userProfile, bankAccount);
+            //applicationDb.overwriteBankAccount(userProfile, bankAccount);
             applicationDb.saveNewTransaction(userProfile, account.getAccountNo(),
                     account.getTransactions().get(account.getTransactions().size()-1));
-            applicationDb.saveNewBankTransaction(userProfile, bankAccount.getAccountNo(),
-                    bankAccount.getTransactions().get(bankAccount.getTransactions().size()-1));
+            //applicationDb.saveNewBankTransaction(userProfile, bankAccount.getAccountNo(),
+            //        bankAccount.getTransactions().get(bankAccount.getTransactions().size()-1));
 
             Toast.makeText(this, "Deposit of $" + String.format(Locale.getDefault(), "%.2f",depositAmount) + " " + "made successfully", Toast.LENGTH_SHORT).show();
 
