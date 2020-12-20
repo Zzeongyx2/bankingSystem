@@ -392,13 +392,13 @@ public class DrawerActivity extends AppCompatActivity implements NavigationView.
             case R.id.nav_openbankaccounts:
                 fragmentClass = OpenBankingFragment.class;
                 break;
-            case R.id.nav_deposit:
-                if (userProfile.getAccounts().size() > 0) {
-                    displayDepositDialog();
-                } else {
-                    displayAccountAlertADialog("Deposit");
-                }
-                break;
+//            case R.id.nav_deposit:
+//                if (userProfile.getAccounts().size() > 0) {
+//                    displayDepositDialog();
+//                } else {
+//                    displayAccountAlertADialog("Deposit");
+//                }
+//                break;
             case R.id.nav_transfer:
                 if (userProfile.getAccounts().size() < 2) {
                     displayAccountAlertADialog("Transfer");
