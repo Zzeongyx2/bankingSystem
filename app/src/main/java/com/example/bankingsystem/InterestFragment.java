@@ -97,27 +97,33 @@ public class InterestFragment extends Fragment {
     }
 
     private void confirmPayInterest() {
-            int index = account.getSelectedItemPosition();
 
             BankLoan changeLoanAmount = GlobalStorage.bankLoanHashMap.get(GlobalStorage.currentSelectionAddressString);
-            changeLoanAmount.setAmount(0);
 
-            GlobalStorage.bankLoanHashMap.put(GlobalStorage.currentSelectionAddressString, changeLoanAmount);
+            if((changeLoanAmount.getAmount() == 0)){
+                Toast.makeText(getActivity(), "You already Pay interest, Check your interest $" + String.format(String.valueOf(changeLoanAmount.getAmount())), Toast.LENGTH_SHORT).show();
+            } else {
+                int index = account.getSelectedItemPosition();
 
-            ChangeAmount = Double.parseDouble(String.format("%.2f", GlobalStorage.bankLoanHashMap.get(GlobalStorage.currentSelectionAddressString).getAmount()));
+                changeLoanAmount.setAmount(0);
 
-            edtInterestAmount.setText(String.valueOf(ChangeAmount));
+                GlobalStorage.bankLoanHashMap.put(GlobalStorage.currentSelectionAddressString, changeLoanAmount);
 
-            Account accs = (Account) account.getItemAtPosition(index);
+                ChangeAmount = Double.parseDouble(String.format("%.2f", GlobalStorage.bankLoanHashMap.get(GlobalStorage.currentSelectionAddressString).getAmount()));
 
-            userProfile.setLoan(accs, CurrentAmount);
-            account.setAdapter(accountAdapter);
+                edtInterestAmount.setText(String.valueOf(ChangeAmount));
 
-            SharedPreferences.Editor prefsEditor = userPreferences.edit();
-            json = gson.toJson(userProfile);
-            prefsEditor.putString("LastProfileUsed", json).apply();
+                Account accs = (Account) account.getItemAtPosition(index);
 
-            Toast.makeText(getActivity(), "Pay interest of $" + String.format(String.valueOf(CurrentAmount)), Toast.LENGTH_SHORT).show();
+                userProfile.setLoan(accs, CurrentAmount);
+                account.setAdapter(accountAdapter);
+
+                SharedPreferences.Editor prefsEditor = userPreferences.edit();
+                json = gson.toJson(userProfile);
+                prefsEditor.putString("LastProfileUsed", json).apply();
+
+                Toast.makeText(getActivity(), "Pay interest of $" + String.format("%.2f", CurrentAmount), Toast.LENGTH_SHORT).show();
+            }
     }
 
 }
